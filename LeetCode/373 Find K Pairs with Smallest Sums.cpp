@@ -1,40 +1,28 @@
 class Solution {
  
  public:
-  
-  int Split(std::vector<int> &nums, int l, int r) {
-    int pivot_index = l + rand() % (r - l);
-    std::swap(nums[pivot_index], nums[r - 1]);
-    int target_index = l;
-    for (int i = l; i < r - 1; ++i) {
-      if (nums[i] < nums[r - 1]) {
-        std::swap(nums[i], nums[target_index++]);
+    
+  std::vector<std::pair<int, int> > kSmallestPairs(std::vector<int> &nums_1, std::vector<int> &nums_2, int k) {
+    std::priority_queue<std::tuple<int, int, int> > q;
+    const size_t N_1 = nums_1.size();
+    const size_t N_2 = nums_2.size();
+    for (size_t i = 0; i < N_1 && i < k; ++i) {
+      for (size_t j = 0; j < N_2 && j < k; ++j) {
+        if (q.size() == k && (nums_1[i] + nums_2[j]) >= std::get<0>(q.top())) {
+          break;
+        }
+        q.push(std::make_tuple(nums_1[i] + nums_2[j], nums_1[i], nums_2[j]));
+        if (q.size() > k) {
+          q.pop();
+        }
       }
     }
-    std::swap(nums[r - 1], nums[target_index]);
-    return target_index;
-  }
-
-  void SplitWithKth(std::vector<int> &nums, int l, int r, int k) {
-    int pivot_index = Split(nums, l, r);
-    if (pivot_index == k) {
-      return;
+    std::vector<std::pair<int, int> > pairs;
+    while (q.size()) {
+      pairs.push_back(std::make_pair(std::get<1>(q.top()), std::get<2>(q.top())));
+      q.pop();
     }
-    if (pivot_index < k) {
-      SplitWithKth(nums, pivot_index + 1, r, k);
-    } else {
-      SplitWithKth(nums, l, pivot_index, k);
-    }
-  }
-
-  void wiggleSort(std::vector<int> &nums) {
-    const int N = nums.size();
-    SplitWithKth(nums, 0, N, N / 2 - !(N & 1));
-    std::reverse(nums.begin(), nums.begin() + N / 2 - !(N & 1));
-    std::reverse(nums.begin() + N / 2 - !(N & 1), nums.end());
-    for (int i = 1, j = N - 1 - !(N & 1); i < j; i += 2, --j) {
-      std::swap(nums[i], nums[j]);
-    }
+    return pairs;
   }
 
 };
