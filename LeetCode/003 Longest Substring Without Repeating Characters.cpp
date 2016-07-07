@@ -1,27 +1,19 @@
-#include <string>
-
-using std::string;
-
 class Solution {
+ 
  public:
-  int lengthOfLongestSubstring(string s) {
-    int maxLength = 0;
-    for (int i = 0; s[i]; ++i) {
-      int length = 0;
-      bool rec[256] = {};
-      for (int j = i; s[j]; ++j) {
-        if (rec[s[j]]) {
-          break;
-        }
-        ++rec[s[j]];
-        ++length;
+    
+  int lengthOfLongestSubstring(std::string s) {
+    int count[256] = {};
+    int length = 0;
+    for (int l = 0, r = 0; s[r];) {
+      r = std::max(l, r);
+      while (s[r] && !count[s[r]]) {
+        ++count[s[r++]];
       }
-      maxLength = length > maxLength ? length : maxLength;
+      length = std::max(length, r - l);
+      --count[s[l++]];
     }
-    return maxLength;
+    return length;
   }
-};
 
-int main() {
-  return 0;
-}
+};
